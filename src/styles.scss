@@ -1,1 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Custom CSS */
+@import url("./assets/css/calc_css.css");
+@import url("./assets/css/bootstrap.min.css");
+@import url("./assets/css/font-icons.css");
+@import url("./assets/css/select2.css");
+@import url("./assets/css/jquery-ui.css");
+@import url("./assets/css/docs.css");
+
+/* Toastr CSS */
+@import 'ngx-toastr/toastr';

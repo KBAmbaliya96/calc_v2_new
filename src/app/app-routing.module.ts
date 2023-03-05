@@ -1,7 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { PageNotFoundComponent } from './shared/components/page-not-found/page-not-found.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  {
+    path: 'public',
+    loadChildren: () => import('./modules/public/public.module').then(m => m.PublicModule)
+  },
+  {
+    path: '**',
+    component: PageNotFoundComponent
+  }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
