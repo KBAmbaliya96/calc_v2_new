@@ -1,1 +1,20 @@
-<p>input works!</p>
+<div class="textfield-group calc-field-wrapper field-wrapper-{{uid}}"
+    [ngClass]="{'is-focused': field.isFocused === true, 'is-filled': field.isFilled === true}">
+    <input autocomplete="off" data-parsley-required="true" aria-required="true"
+        data-parsley-required-message="Dieses Feld muss ausgefüllt werden!" data-parsley-trigger="change"
+        class="calc_input_text textfield-input step2-textfield" id="calc_field_168" type="text" [value]="value"
+        [name]="formControlName" (focus)="field.isFocused = isFieldFocused('focus')"
+        (blur)="field.isFocused = isFieldFocused('blur'); field.isFilled = isFieldFilled()"
+        (input)="writeValue($event)" />
+    <ul *ngIf="mandatory && marker != 'e_mail' && isNotValid" class="parsley-errors-list filled" id="parsley-id-11"
+        aria-hidden="false">
+        <li class="parsley-required">{{getLabel('validationerror_mandatory')}}</li>
+    </ul>
+    <ul *ngIf="mandatory && marker == 'e_mail' && isNotValid" class="parsley-errors-list filled" id="parsley-id-11"
+        aria-hidden="false">
+        <li class="parsley-required">{{getLabel('validationerror_validation.1')}}</li>
+    </ul>
+    <label for="calc_field_168" title="Name">
+        {{name}}<span *ngIf="mandatory" class="mandatory">*</span>
+    </label>
+</div>

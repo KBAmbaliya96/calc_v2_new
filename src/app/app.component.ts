@@ -60,11 +60,8 @@ export class AppComponent {
     // Check PWA is installed
     this.pwaService.installed$.subscribe((evnt) => {
       this.isInstalled = evnt;
-    })
-
-    // Check parameters are passed to get client configuration
-    this.activatedRouter.queryParams.subscribe((param) => {
-      if (Object.keys(param).length == 0) {
+      // FIXME: add /?c_name=client_name when PWA starts
+      if (this.isInstalled === true) {
         // Check if URL params and client configuration is stored in local storage
         let queryParams = this.storageService.get(environment.clientParamsName);
         let clientConfig = this.storageService.get(environment.clientConfigName);
@@ -82,9 +79,14 @@ export class AppComponent {
           } else {
             this.router.navigate(['private'])
           }
-
-          console.log('Client Config: ', clientConfig );
         }
+      }
+    })
+
+    // Check parameters are passed to get client configuration
+    this.activatedRouter.queryParams.subscribe((param) => {
+      if (Object.keys(param).length == 0) {
+        this.isShowParamError = true;
       } else {
         this.isShowParamError = false;
         // Store URL params for PWA
@@ -103,6 +105,21 @@ export class AppComponent {
         return;
       }
       this.storageService.set(environment.clientConfigName, res);
+      let clientConfig = res;
+      let feUsers: any[] = [];
+      if (clientConfig['objectfeUser']) {
+        feUsers = clientConfig['objectfeUser'];
+      }
+
+      if (feUsers.length > 0) {
+        if (this.storageService.get(environment.feUserLoggedInKey)) {
+          this.router.navigate(['private/calculator'], { queryParamsHandling: 'preserve' });
+        } else {
+          this.router.navigate(['public'], { queryParamsHandling: 'preserve' })
+        }
+      } else {
+        this.router.navigate(['private/calculator'], { queryParamsHandling: 'preserve' })
+      }
     })
   }
 

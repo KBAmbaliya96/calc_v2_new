@@ -1,48 +1,48 @@
-<div class="wrapper">
-    <div class="sidebar">
-      <div class="frame frame-default frame-type-list frame-layout-0">
-        <div class="tx-calc">
-          <h2>Finanzierungsrechner Login</h2>
-          <form [formGroup]="loginForm" class="contact-form login-form">
-            <div class="textfield-group" [ngClass]="{
+<!-- <div class="wrapper"> -->
+<!-- <div class="sidebar"> -->
+<div class="frame frame-default frame-type-list frame-layout-0">
+  <div class="tx-calc">
+    <h2>Finanzierungsrechner Login</h2>
+    <form [formGroup]="loginForm" class="contact-form login-form">
+      <div class="textfield-group" [ngClass]="{
                 'is-focused': isClientNameFocused === true,
                 'is-filled': isClientNameFilled === true
               }">
-              <input type="text" #clientName formControlName="clientName" id="clientname" class="textfield-input"
-                (focus)="isClientNameFocused = isFieldFocused('focus')" (blur)="
+        <input type="text" #clientName formControlName="clientName" id="clientname" class="textfield-input"
+          (focus)="isClientNameFocused = isFieldFocused('focus')" (blur)="
                   isClientNameFocused = isFieldFocused('blur');
                   isClientNameFilled = isFieldFilled('clientName')
                 " />
-              <label for="clientname">Client Name</label>
-            </div>
-            <div class="textfield-group" [ngClass]="{
+        <label for="clientname">Client Name</label>
+      </div>
+      <div class="textfield-group" [ngClass]="{
                 'is-focused': isUsernameFocused === true,
                 'is-filled': isUsernameFilled === true
               }">
-              <input type="text" formControlName="userName" id="feusername" class="textfield-input"
-                (focus)="isUsernameFocused = isFieldFocused('focus')" (blur)="
+        <input type="text" formControlName="userName" id="feusername" class="textfield-input"
+          (focus)="isUsernameFocused = isFieldFocused('focus')" (blur)="
                   isUsernameFocused = isFieldFocused('blur');
                   isUsernameFilled = isFieldFilled('userName')
                 " />
-              <label for="feusername">Benutzer</label>
-            </div>
-            <div class="textfield-group" [ngClass]="{
+        <label for="feusername">Benutzer</label>
+      </div>
+      <div class="textfield-group" [ngClass]="{
                 'is-focused': isPasswordFocused === true,
                 'is-filled': isPasswordFilled === true
               }">
-              <input type="password" formControlName="password" id="fepassword" class="textfield-input"
-                (focus)="isPasswordFocused = isFieldFocused('focus')" (blur)="
+        <input type="password" formControlName="password" id="fepassword" class="textfield-input"
+          (focus)="isPasswordFocused = isFieldFocused('focus')" (blur)="
                   isPasswordFocused = isFieldFocused('blur');
                   isPasswordFilled = isFieldFilled('password')
                 " />
-              <label for="fepassword">Passwort</label>
-            </div>
-            <button type="submit" id="login-submit" (click)="formSubmit()" class="blue-button login-button">
-              <i class="icon icon_right_small"></i>
-              <span class="button-lefticon">Anmelden</span>
-            </button>
-          </form>
-        </div>
+        <label for="fepassword">Passwort</label>
       </div>
-    </div>
+      <button type="submit" id="login-submit" (click)="formSubmit()" class="blue-button login-button">
+        <i class="icon icon_right_small"></i>
+        <span class="button-lefticon">Anmelden</span>
+      </button>
+    </form>
   </div>
+</div>
+<!-- </div> -->
+<!-- </div> -->

@@ -1,0 +1,544 @@
+<!-- Main content -->
+<div class="frame frame-default frame-type-list frame-layout-0">
+    <div class="tx-calc">
+
+        <!-- Calculations Errors -->
+        <div *ngIf="dataObject['calcErrors']['invalidPartnerName']">
+            <input type="hidden" id="invalid_partner_name" value="1">
+            <ul class="calc-conf-errors">
+                <li>{{ getLabel('calc_conf_error') }}</li>
+            </ul>
+        </div>
+        <div *ngIf="dataObject['calcErrors']['unauthorisedWebpage']">
+            <input type="hidden" id="invalid_partner_name" value="1">
+            <ul class="calc-conf-errors">
+                <li>{{ getLabel('calc_access_restricted') }}</li>
+            </ul>
+        </div>
+        <div *ngIf="dataObject['calcErrors']['unauthorisedIP']">
+            <input type="hidden" id="invalid_partner_name" value="1">
+            <ul class="calc-conf-errors">
+                <li>{{ getLabel('calc_access_restricted') }}</li>
+            </ul>
+        </div>
+
+        <!-- Calculator -->
+        <div class="tab-section">
+            <h2>Finanzierungsrechner</h2>
+            <!-- f:comment -->
+            <!-- <div class="tab-content" id="widget-tab-content">
+                <div class="tab-pane zero-tab-content active" role="tabpanel" aria-labelledby="zero-tab">
+                    <h2>{{ getLabel('panel_zero_heading') }}</h2>
+                </div>
+                <div class="tab-pane first-tab-content active" role="tabpanel" aria-labelledby="first-tab">
+                    <h2>{{ getLabel('panel_one_heading') }}</h2>
+                </div>
+                <div class="tab-pane second-tab-content fade" role="tabpanel" aria-labelledby="second-tab">
+                    <h2>{{ getLabel('panel_two_heading') }}</h2>
+                </div>
+            </div> -->
+
+            <!-- Tabular icons -->
+            <div
+                *ngIf="dataObject['noObjectName'] === true || dataObject['noPrice'] === true || dataObject['showObjGroupDropdown'] === true || dataObject['showUsageDropdown'] === true || dataObject['showSchemeDropdown'] === true; then thenTabs else elseTabs">
+            </div>
+            <!-- Tabular Icons = 0, 1, 2 -->
+            <ng-template #thenTabs>
+                <ul class="nav nav-tabs" id="widget-tab" role="tablist">
+                    <li class="nav-item">
+                        <a id="zero" class="nav-link" [ngClass]="{ active: isPageZeroActive == true }"
+                            (click)="stepZeroActivate()">0</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="first" class="nav-link" (click)="stepOneActivate()">1</a>
+                    </li>
+                    <li class="nav-item" (click)="stepTwoActivate()">
+                        <a id="second" class="nav-link" [ngClass]="{ active: isPageTwoActive === true }">2</a>
+                    </li>
+                </ul>
+            </ng-template>
+            <!-- Tabular Icons = 1, 2 -->
+            <ng-template #elseTabs>
+                <ul class="nav nav-tabs" id="widget-tab" role="tablist">
+                    <li class="nav-item no-zero" (click)="stepOneActivate()">
+                        <a id="first" class="nav-link" [ngClass]="{ active: isPageOneActive === true }">1</a>
+                    </li>
+                    <li class="nav-item" (click)="stepTwoActivate()">
+                        <a id="second" class="nav-link" [ngClass]="{ active: isPageTwoActive === true }">2</a>
+                    </li>
+                </ul>
+            </ng-template>
+
+            <!-- Calculation Form -->
+            <form class="contact-form" id="{{ 'form-' + dataObject['dataObject']['form']['uid']}}"
+                [formGroup]="calculationForm" (ngSubmit)="formSubmit()">
+
+                <input type="hidden" id="ajaxUriForCalc" [value]="dataObject['ajaxUriForCalc']" />
+                <input type="hidden" id="ajaxUriForObjGroup" [value]="dataObject['ajaxUriForObjGroup']" />
+                <input type="hidden" id="ajaxUriForDurationPeriod" [value]="dataObject['ajaxUriForDurationPeriod']" />
+                <input type="hidden" id="formToken" formControlName="formToken" [value]="dataObject['formToken']" />
+                <input type="hidden" id="udata" formControlName="udata" [value]="dataObject['userData']" />
+                <!-- FIXME: dataObject['link'] does not received from configuration file -->
+                <input type="hidden" id="link" formControlName="link" [value]="dataObject['link']" />
+                <input type="hidden" id="objId" formControlName="objId" [value]="dataObject['objectId']" />
+                <input type="hidden" id="dataObjectUid" formControlName="dataObjectUid"
+                    [value]="dataObject['dataObject']['uid']" />
+                <input type="hidden" id="obj_group" formControlName="obj_group"
+                    [value]="dataObject['defaultObjectGroup']['uid']" />
+                <input type="hidden" id="cal_scheme" formControlName="cal_scheme"
+                    [value]="dataObject['defaultCalScheme']['uid']" />
+                <input type="hidden" id="usage" formControlName="usage" [value]="dataObject['defaultTypeOfUsage']" />
+                <input type="hidden" id="dataTrack" formControlName="dataTrack" value="111" />
+
+                <!-- FIXME: need to checkout misc/homeypod -->
+                <!-- <f:render partial="Misc/HoneyPod" arguments="{_all}" /> -->
+                <div *ngIf="showFormOnError">
+                    <input type="hidden" id="show_form_on_error" value="1" />
+                </div>
+
+                <ul id="calc-errors"></ul>
+                <div class="tab-content">
+
+                    <!-- Page Zero -->
+                    <div
+                        *ngIf="dataObject['noObjectName'] === true || dataObject['noPrice'] === true || dataObject['showObjGroupDropdown'] === true || dataObject['showUsageDropdown'] === true || dataObject['showSchemeDropdown'] === true">
+                        <div class="tab-pane fade in active show" id="zero-tab">
+
+                            <!-- Data Object UID -->
+                            <input type="hidden" id="dataObjectUid" formControlName="dataObjectUid"
+                                [value]="dataObject['uid']" />
+
+                            <!-- Object Name -->
+                            <div class="textfield-group" *ngIf="dataObject['noObjectName'] === true">
+                                <div class="textfield-group">
+                                    <input type="text" formControlName="objectname_input" id="objectname_input"
+                                        class="textfield-input" additionalAttributes="{autocomplete: 'off'}">
+                                    <label for="objectname_input">{{ getLabel('step1_obj_name') }}</label>
+                                </div>
+                            </div>
+
+                            <!-- Purchase Amount -->
+                            <div class="textfield-group" *ngIf="dataObject['noPrice'] === true"
+                                [ngClass]="{'is-focused': objectname_input.isFocused === true, 'is-filled': objectname_input.isFilled === true}">
+                                <input type="text" formControlName="purchase_amt_input" id="purchase_amt_input"
+                                    class="textfield-input" additionalAttributes="{autocomplete: 'off'}"
+                                    (focus)="purchase_amt_input.isFocused = isFieldFocused('focus')"
+                                    (blur)="purchase_amt_input.isFocused = isFieldFocused('blur'); purchase_amt_input.isFilled = isFieldFilled('objectname_input')">
+                                <label for="purchase_amt_input">{{ getLabel('step1_purchase_amt') }}</label>
+                            </div>
+
+                            <!-- Object Group -->
+                            <div class="textfield-group select-menu is-filled"
+                                *ngIf="dataObject['showObjGroupDropdown'] === true"
+                                [ngClass]="{'is-focused': objectname_input.isFocused === true, 'is-filled': objectname_input.isFilled === true}">
+                                <label for="select_obj_group">{{ getLabel('step1_obj_group') }}</label>
+                                <i class="icon icon-down_large"></i>
+                                <select formControlName="obj_group" id="select_obj_group"
+                                    class="select-style textfield-input"
+                                    *ngFor="let objectGroup of dataObject['dataObject']['objectGroup']">
+                                    <option value="objectGroup.uid">{{objectGroup.name}}</option>
+                                </select>
+                            </div>
+
+                            <!-- Calculation Scheme -->
+                            <div *ngIf="dataObject['showSchemeDropdown'] === true"
+                                class="textfield-group select-menu is-filled" id="scheme-dropdown">
+                                <label for="select_scheme">{{ getLabel('step1_scheme') }}</label>
+                                <i class="icon icon-down_large"></i>
+                                <select formControlName="cal_scheme" id="select_scheme"
+                                    class="select-style textfield-input"
+                                    *ngFor="let calScheme of dataObject['defaultObjectGroup']['calculationScheme']">
+                                    <option value="calScheme.uid">{{
+                                        getLabel('tx_calc_calculation_scheme.name.I.' + calScheme.name) }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Usage -->
+                            <div class="textfield-group select-menu is-filled"
+                                *ngIf="dataObject['showUsageDropdown'] === true">
+                                <label for="select_usage_type">{{ getLabel('step1_usage') }}</label>
+                                <i class="icon icon-down_large"></i>
+                                <select formControlName="usage" id="select_usage_type"
+                                    class="select-style textfield-input">
+                                    <option value="1">{{ getLabel('tx_calc_data.type_of_usage.I.0') }}</option>
+                                    <option value="2">{{ getLabel('tx_calc_data.type_of_usage.I.1') }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Go to step One button -->
+                            <button type="button" class="blue-button show-first-tab" id="zero-tab-btn"
+                                (click)="stepOneActivate()">
+                                <i class="icon icon-right_small"></i>
+                                <span class="button-lefticon">{{ getLabel('step1_submit') }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Page One -->
+                    <div class="tab-pane fade" id="first-tab" *ngIf="isPageOneActive"
+                        [ngClass]="{'in active show': dataObject['noObjectName'] !== true || dataObject['noPrice'] !== true || dataObject['showUsageDropdown'] !== true || dataObject['showSchemeDropdown'] !== true}">
+
+                        <!-- Object Name (Page one title) -->
+                        <h3 id="lbl_objectname" class="lbl_objectname" *ngIf="dataObject['objectName'] != ''">
+                            {{ dataObject['objectName'] }} &nbsp; {{ dataObject['objectId'] }}
+                        </h3>
+
+                        <input type="hidden" id="objectname_hidden" formControlName="objectname_hidden"
+                            [value]="dataObject['objectName']['objectId']" />
+                        <input type="hidden" id="objectname" formControlName="objectname"
+                            [value]="dataObject['objectName']" />
+                        <input type="hidden" id="objectid" formControlName="objectid" value="{objectId}" />
+
+                        <div class="purchase-text"><label>{{ getLabel('purchase_text') }}</label></div>
+                        <h3 id="lbl_purchase_amt" class="lbl_purchase_amt" *ngIf="noPrice != true">
+                            {{ dataObject['price'] }}</h3>
+                        <input type="hidden" id="purchase_amt_hidden" formControlName="purchase_amt_hidden"
+                            [value]="dataObject['price']" />
+                        <input type="hidden" id="min_purchase_amt" value="{{ dataObject['minPurchaseAmt'] }}" />
+                        <input type="hidden" id="min_purchase_amt_msg" value="{{ getLabel('minPurchaseAmtMsg') }}" />
+                        <input type="hidden" id="max_purchase_amt" value="{{ dataObject['maxPurchaseAmt'] }}" />
+                        <input type="hidden" id="max_purchase_amt_msg" value="{{ getLabel('maxPurchaseAmtMsg') }}" />
+                        <input type="hidden" id="purchase_amt_less_eighty"
+                            value="{{ getLabel('purchaseAmtLessEighty')}}" />
+
+                        <!-- Monthly Rate -->
+                        <div class="label-text"
+                            [ngClass]="{'is-focused': monthly_rate.isFocused === true, 'is-filled': monthly_rate.isFilled === true}">
+                            <label>{{ getLabel('step2_monthly_rate') }}</label>
+                            <span class="text-lable" id="monthly_rate_text">
+                                {{ dataObject['calculatedData']['monthlyRate'] }}
+                            </span>
+                            <input type="hidden" id="monthly_rate" formControlName="monthly_rate"
+                                [value]="dataObject['monthlyRate']"
+                                (focus)="monthly_rate.isFocused = isFieldFocused('focus')"
+                                (blur)="monthly_rate.isFocused = isFieldFocused('blur'); monthly_rate.isFilled = isFieldFilled('monthly_rate')" />
+                        </div>
+
+                        <!-- First Installment, Minimum First Installment, Maximum First Installment -->
+                        <div *ngIf="dataObject['calculatedData']['showFirstInstallment'] === true">
+                            <div
+                                *ngIf="dataObject['calculatedData']['actFirstInstallment'] === 0; else elseActFirstInstallment">
+                                <div class="textfield-group is-filled">
+                                    <input type="text" formControlName="first_installment" id="first_installment_input"
+                                        [value]="dataObject['calculatedData']['firstInstallmentAmt']"
+                                        class="textfield-input" additionalAttributes="{autocomplete: 'off'}">
+                                    <label for="first_installment">
+                                        {{ getLabel('step2_first_instalment') }}
+                                    </label>
+                                    <input type="hidden" id="min_first_installment"
+                                        [value]="dataObject['calculatedData']['minFirstInstallment']" />
+                                    <input type="hidden" id="min_first_installment_msg"
+                                        [value]="getLabel('minFirstInstallmentMsg')" />
+                                    <input type="hidden" id="max_first_installment"
+                                        [value]="dataObject['calculatedData']['maxFirstInstallment']" />
+                                    <input type="hidden" id="max_first_installment_msg"
+                                        [value]="getLabel('maxFirstInstallmentMsg')" />
+                                </div>
+                            </div>
+                            <ng-template #elseActFirstInstallment>
+                                <div class="normal-labeltext">
+                                    <label for="first_installment">
+                                        {{ getLabel('step2_first_instalment') }}
+                                    </label>
+                                    <span class="text-lable" id="first_installment_readonly">
+                                        {{ dataObject['calculatedData']['firstInstallmentAmt'] }}
+                                    </span>
+                                </div>
+                            </ng-template>
+                            <input type="hidden" id="first_installment" formControlName="first_installment"
+                                [value]="dataObject['calculatedData']['firstInstallmentAmt']" />
+                        </div>
+
+                        <!-- Last Installment -->
+                        <div *ngIf="dataObject['calculatedData']['showLastInstallment'] == true">
+                            <div
+                                *ngIf="dataObject['calculatedData']['actFinalInstallment'] == 0; else elseActFinalInstallment">
+                                <div class="textfield-group is-filled">
+                                    <input type="text" formControlName="last_installment" id="last_installment_input"
+                                        [value]="dataObject['calculatedData']['lastInstallmentAmt']"
+                                        class="textfield-input" additionalAttributes="{autocomplete: 'off'}" />
+                                    <label for="last_installment">{{ getLabel('step2_last_instalment')
+                                        }}</label>
+                                    <input type="hidden" id="max_last_installment"
+                                        [value]="dataObject['calculatedData']['maxLastInstallment']" />
+                                    <input type="hidden" id="max_last_installment_msg"
+                                        [value]="getLabel('maxLastInstallmentMsg')" />
+                                </div>
+                            </div>
+                            <ng-template #elseActFinalInstallment>
+                                <div class="normal-labeltext">
+                                    <label for="last_installment">{{ getLabel('step2_last_instalment')
+                                        }}</label>
+                                    <span class="text-lable" id="last_installment_readonly">{{
+                                        dataObject['calculatedData']['lastInstallmentAmt'] }}</span>
+                                </div>
+                            </ng-template>
+                            <input type="hidden" id="last_installment" formControlName="last_installment"
+                                [value]="dataObject['calculatedData']['lastInstallmentAmt']">
+                        </div>
+
+                        <!-- Installment Check -->
+                        <div *ngIf="dataObject['installmentCheck'] == true">
+                            <input id="installment_check" type="hidden" value="1">
+                        </div>
+
+                        <!-- Duration Period -->
+                        <div class="textfield-group select-menu"
+                            [ngClass]="{'is-focused': duration_period.isFocused === true, 'is-filled': duration_period.isFilled === true}">
+                            <label for="duration_period">{{ getLabel('step2_duration') }}</label>
+                            <i class="icon icon-down_large"></i>
+                            <select formControlName="duration_period" id="duration_period"
+                                class="select-style textfield-input" (change)="onDuratinPeriodChange()"
+                                (focus)="duration_period.isFocused = isFieldFocused('focus')"
+                                (blur)="duration_period.isFocused = isFieldFocused('blur'); duration_period.isFilled = isFieldFilled('duration_period')">
+                                <option *ngFor="let term of dataObject['allTerms']; first as isFirst"
+                                    [value]="term['terms']">
+                                    <span *ngIf="isFirst">{{ term['terms'] + " " + getLabel('months')}}</span>
+                                    <span *ngIf="!isFirst">{{ term['terms'] + " " + getLabel('months') }}</span>
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Financing Amount -->
+                        <div class="normal-labeltext">
+                            <label for="financing_amount">{{ getLabel('step2_financial_amt') }}</label>
+                            <span class="text-lable" id="financing_amount_text">
+                                {{ dataObject['calculatedData']['amountToBeFinanced'] }}
+                            </span>
+                            <input type="hidden" id="financing_amount" formControlName="financing_amount"
+                                [value]="dataObject['calculatedData']['amountToBeFinanced']" />
+                        </div>
+
+                        <!-- Total Financing Amount & Effective Rate -->
+                        <div *ngIf=" dataObject['typeOfUsagePrivate'] === true">
+                            <div class="normal-labeltext">
+                                <label for="total_financing_amt">{{ getLabel('step2_total_return') }}</label>
+                                <span class="text-lable" id="total_financing_amt_text">
+                                    {{ dataObject['calculatedData']['totalFinancingAmt'] }}
+                                </span>
+                                <input type="hidden" id="total_financing_amt" formControlName="total_financing_amt"
+                                    [value]="dataObject['calculatedData']['totalFinancingAmt']" />
+                            </div>
+                            <div class="normal-labeltext" id="effective_rate_div">
+                                <label for="effective_rate">{{ getLabel('step2_effective_int') }}</label>
+                                <span class="text-lable" id="effective_rate_text">
+                                    {{ dataObject['calculatedData']['effectiveRate'] }}
+                                </span>
+                                <input type="hidden" id="effective_rate" formControlName="effective_rate"
+                                    [value]="dataObject['calculatedData']['effectiveRate']" />
+                            </div>
+                        </div>
+
+                        <!-- Nominal Rate -->
+                        <div class="normal-labeltext">
+                            <label for="nominal_rate">{{ getLabel('step3_nominal') }}</label>
+                            <span class="text-lable" id="nominal_rate_text">
+                                {{ dataObject['calculatedData']['nominalRate'] }}
+                            </span>
+                            <input type="hidden" id="nominal_rate" formControlName="nominal_rate"
+                                [value]="dataObject['calculatedData']['nominalRate']" />
+                        </div>
+
+                        <!-- Number of Installments -->
+                        <div class="normal-labeltext">
+                            <label for="nominal_rate">{{ getLabel('no_of_installments') }}</label>
+                            <span class="text-lable" id="no_of_installments">
+                                {{ dataObject['calculatedData']['noOfInstallments'] + " " + getLabel('raten') }}
+                            </span>
+                        </div>
+
+                        <!-- <f:comment> -->
+                        <!--  <f:if condition="{noOfInstallments} > 0">
+                            <p><f:translate key="no_of_installments" /><br/>
+                            <span id="no_of_installments">{noOfInstallments}</span>
+                                {f:translate(key:'raten')}</p>
+                        </f:if> -->
+                        <!-- </f:comment> -->
+
+                        <!-- Disagio Rate -->
+                        <div *ngIf="dataObject['styleObject']['showDisagio']">
+                            <p>{{ getLabel('disagio_text') + " " + dataObject['disagioRate'] + '%' }}</p>
+                        </div>
+
+                        <!-- Go to step two button -->
+                        <button type="button" class="blue-button show-second-tab" id="first-tab-btn"
+                            (click)="stepTwoActivate()">
+                            <i class="icon icon-right_small"></i>
+                            <span class="button-lefticon">{{ getLabel('step1_submit') }}</span>
+                        </button>
+                    </div>
+
+                    <!-- Page Two -->
+                    <div id="second-tab" *ngIf="dataObject['dataObject']['form'] && isPageTwoActive">
+                        <ul class="calc_message calc_message_error" *ngIf="validationResults['flattenedErrors']">
+                            <div *ngIf="let errors of validationResults['flattenedErrors']">
+                                <div *ngFor="let singleError of errors">
+                                    <li>
+                                        <span *ngIf="singleError['message'] == 'spam_details'">
+                                            {{ getLabel('validationerror_spam') + " " +
+                                            singleError['arguments']['spamfactor'] }}
+                                        </span>
+                                        {{ getLabel('validationerror_' + singleError['message']) + " " +
+                                        singleError['message'] }}
+                                    </li>
+                                </div>
+                            </div>
+                        </ul>
+                        <p>{{ getLabel('form_title') }}</p>
+
+                        <div *ngFor="let field of dataObject['dataObject']['form']['fields']">
+                            <!-- {{field | json}} -->
+                            <div [ngSwitch]="field['type']">
+                                <div *ngSwitchCase="'select'">
+                                    <app-select [formControlName]="field['marker']" [mandatory]="field['mandatory']"
+                                        [marker]="field['marker']" [multiselect]="field['multiselect']"
+                                        [multiselectForField]="field['multiselectForField']" [name]="field['name']"
+                                        [options]="field['options']" [pdfRef]="field['pdfRef']" [pid]="field['pid']"
+                                        [senderEmail]="field['senderEmail']" [senderName]="field['senderName']"
+                                        [senderSalutation]="field['senderSalutation']" [uid]="field['uid']"
+                                        [validation]="field['validation']"
+                                        [validationConfiguration]="field['validationConfiguration']"
+                                        [parentValue]="field['value']"></app-select>
+                                </div>
+                                <div *ngSwitchCase="'input'">
+                                    <app-input [formControlName]="field['marker']" [mandatory]="field['mandatory']"
+                                        [marker]="field['marker']" [multiselect]="field['multiselect']"
+                                        [multiselectForField]="field['multiselectForField']" [name]="field['name']"
+                                        [options]="field['options']" [pdfRef]="field['pdfRef']" [pid]="field['pid']"
+                                        [senderEmail]="field['senderEmail']" [senderName]="field['senderName']"
+                                        [senderSalutation]="field['senderSalutation']" [uid]="field['uid']"
+                                        [validation]="field['validation']"
+                                        [validationConfiguration]="field['validationConfiguration']"
+                                        [parentValue]="field['value']"></app-input>
+                                </div>
+                                <div *ngSwitchCase="'submit'">
+                                    <!-- checkbox multi text -->
+                                    <div *ngIf="dataObject['activate_insurance']">
+                                        <div class="inputcheckbox">
+                                            <div class="checkbox-col cal_field_checkbox">
+                                                <input type="checkbox" formControlName="insurareractive" value="yes"
+                                                    id="calc_field_abc" class="calc_checkbox_multi"
+                                                    property="insurareractive">
+                                                <label for="calc_field_abc" class="label">
+                                                    {{getLabel('checkbox_label_field')}}
+                                                </label>
+                                            </div>
+
+                                            <div id="insurance_data"
+                                                *ngIf="calculationForm.value.insurareractive == true">
+                                                <!-- name baujahr-->
+                                                <div class="textfield-group calc-field-wrapper field-wrapper-baujahr"
+                                                    [ngClass]="{'is-focused': insurareractive.isFocused === true, 'is-filled': insurareractive.isFilled === true}">
+                                                    <input type="text" formControlName="baujahr" autocomplete="off"
+                                                        aria-required="true"
+                                                        data-parsley-required-message="Dieses Feld muss ausgefüllt werden!"
+                                                        data-parsley-trigger="change"
+                                                        class="calc_input_text textfield-input step2-textfield"
+                                                        id="calc_field_baujahr"
+                                                        (focus)="insurareractive.isFocused = isFieldFocused('focus')"
+                                                        (blur)="insurareractive.isFocused = isFieldFocused('blur'); insurareractive.isFilled = isFieldFilled('baujahr')">
+                                                    <ul *ngIf="calculationForm.value.insurareractive == true && baujahrNotValid == true"
+                                                        class="parsley-errors-list filled" id="parsley-id-11"
+                                                        aria-hidden="false">
+                                                        <li class="parsley-required">
+                                                            {{getLabel('validationerror_mandatory')}}</li>
+                                                    </ul>
+                                                    <label for="calc_field_baujahr" title="Baujahr">
+                                                        {{getLabel('input_label_baujahr')}}<span
+                                                            class="mandatory">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <!-- name fahrgebiet -->
+                                                <div class="textfield-group calc-field-wrapper field-wrapper-fahrgebiet"
+                                                    [ngClass]="{'is-focused': fahrgebiet.isFocused === true, 'is-filled': fahrgebiet.isFilled === true}">
+                                                    <input type="text" formControlName="fahrgebiet" autocomplete="off"
+                                                        aria-required="true"
+                                                        data-parsley-required-message="Dieses Feld muss ausgefüllt werden!"
+                                                        data-parsley-trigger="change"
+                                                        class="calc_input_text textfield-input step2-textfield"
+                                                        id="calc_field_fahrgebiet"
+                                                        (focus)="fahrgebiet.isFocused = isFieldFocused('focus')"
+                                                        (blur)="fahrgebiet.isFocused = isFieldFocused('blur'); fahrgebiet.isFilled = isFieldFilled('fahrgebiet')">
+                                                    <ul *ngIf="calculationForm.value.insurareractive == true && insurareractiveNotValid == true"
+                                                        class="parsley-errors-list filled" id="parsley-id-11"
+                                                        aria-hidden="false">
+                                                        <li class="parsley-required">
+                                                            {{getLabel('validationerror_mandatory')}}</li>
+                                                    </ul>
+                                                    <label for="calc_field_fahrgebiet" title="Fahrgebiet">
+                                                        {{getLabel('input_label_fahrgebiet')}}<span
+                                                            class="mandatory">*</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- single checkbox -->
+                                    <div class="checkbox-col cal_field_checkbox">
+                                        <input type="checkbox" formControlName="datenschutzhinweise"
+                                            property="datenschutzhinweise" value="1" id="calc_field_datenschutzhinweise"
+                                            class="calc_checkbox"
+                                            (change)="datenschutzhinweiseNotValid = isDatenschutzhinweiseValid()">
+                                        <label
+                                            for="calc_field_datenschutzhinweise">{{getLabel('privacy_policy_checkbox_label')}}</label>
+                                    </div>
+                                    <ul *ngIf="datenschutzhinweiseNotValid == true" class="parsley-errors-list filled"
+                                        id="parsley-id-11" aria-hidden="false">
+                                        <li class="parsley-required">{{getLabel('validationerror_mandatory')}}
+                                        </li>
+                                    </ul>
+                                    <app-submit [formControlName]="field['marker']"
+                                        [activate_insurance]="dataObject['activate_insurance']"
+                                        [mandatory]="field['mandatory']" [marker]="field['marker']"
+                                        [multiselect]="field['multiselect']"
+                                        [multiselectForField]="field['multiselectForField']" [name]="field['name']"
+                                        [options]="field['options']" [pdfRef]="field['pdfRef']" [pid]="field['pid']"
+                                        [senderEmail]="field['senderEmail']" [senderName]="field['senderName']"
+                                        [senderSalutation]="field['senderSalutation']" [uid]="field['uid']"
+                                        [validation]="field['validation']"
+                                        [validationConfiguration]="field['validationConfiguration']"
+                                        [parentValue]="field['value']"></app-submit>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="bottom-message">
+            <p>Alle Beträge verstehen sich inkl. 19 % Mehrwertsteuer.</p>
+            <p>&nbsp;</p>
+            <p>
+                Bei dieser Berechnung handelt es sich um ein freibleibendes und
+                unverbindliches Angebot der akf bank GmbH & Co KG für Verbraucher.
+            </p>
+            <ul class="links">
+                <li><a target="_blank">Impressum</a></li>
+                <li><a target="_blank">Datenschutz</a></li>
+            </ul>
+        </div>
+
+        <div *ngIf="styleObject; else elseStyleObject">
+            <input type="hidden" id="style_object" value="1">
+            <input type="hidden" id="btn_font_color" value="{styleObject.buttonFontColor}">
+            <input type="hidden" id="btn_color" value="{styleObject.buttonColor}">
+            <input type="hidden" id="opacity" value="{styleObject.opacity}">
+        </div>
+        <ng-template #elseStyleObject>
+            <input type="hidden" id="style_object" value="0">
+        </ng-template>
+
+        <div *ngIf="activeSellingDetails">
+            <div class="sr-only" id="foot-note-section">
+                <p id="acMonthlyRate">
+                    {{ getLabel('active_selling_monthly_rate') }}
+                </p>
+            </div>
+            <!-- <p id="acFootNote">{{ getLabel('active_selling_footnote') | json}}</p> -->
+        </div>
+    </div>
+</div>

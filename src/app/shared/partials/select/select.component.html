@@ -1,1 +1,10 @@
-<p>select works!</p>
+<div class="textfield-group select-menu is-filled calc-field-wrapper field-wrapper-{{uid}}">
+    <label for="calc_field_{{uid}}">{{name}}</label>
+    <i class="icon icon-down_large"></i>
+    <select name="" property="marker" [multiple]="multiselectForField" class="calc_select select-style textfield-input"
+        id="calc_field_{{uid}}" (focus)="field.isFocused = isFieldFocused('focus')"
+        (blur)="field.isFocused = isFieldFocused('blur'); field.isFilled = isFieldFilled()"
+        (input)="writeValue($event)">
+        <option *ngFor="let option of options" [value]="option">{{option}}</option>
+    </select>
+</div>

@@ -35,7 +35,14 @@ import { HttpClientModule } from '@angular/common/http';
   exports: [
     ReactiveFormsModule,
     ToastrModule,
-    HttpClientModule
+    HttpClientModule,
+    CheckComponent,
+    DateComponent,
+    InputComponent,
+    RadioComponent,
+    SelectComponent,
+    SubmitComponent,
+    TextareaComponent
   ]
 })
 export class SharedModule { }
