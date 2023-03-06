@@ -29,13 +29,8 @@ export class CalculatorComponent {
   ) {
     this.activatedRoute.queryParams.subscribe((params) => {
       this.params = params;
-      this.calculationsService.calcAction(this.params).subscribe((res) => {
-        console.log(res);
-        if (res) {
-          this.dataObject = res;
-        }
-      });
     })
+    this.getCalcActions();
   }
   status: boolean = false;
   params: any;
@@ -167,16 +162,21 @@ export class CalculatorComponent {
   }
 
   onDuratinPeriodChange() {
+
+    this.activatedRoute.queryParams.subscribe((params) => {
+      this.routerSnapshot = params;
+    })
     let price: number = this.routerSnapshot['price'] ? this.routerSnapshot['price'] : 0;
     let firstInstallmentAmt: number = 0.0;
     let lastInstallmentAmt: number = 0.0;
     let durationPeriod: number = this.calculationForm.value.duration_period;
     let dataObj: Object = this.storageService.get(environment.clientConfigName) ? this.storageService.get(environment.clientConfigName) : {};
-    let defaultCalScheme: Object = dataObj['objectGroup']['000000004e353163000000007741139e']['calculationScheme']['000000004e3531e9000000007741139e'];
+    let calculationScheme: Object = Object.values(dataObj['objectGroup'])[0];
+    let defaultCalScheme: Object = Object.values(calculationScheme['calculationScheme'])[0];
     let startingMoneyObj: Object = this.calculationsService.getStartingMoneyObj(price, defaultCalScheme);
     let calculations = this.calculationsService.calculation(price, firstInstallmentAmt, lastInstallmentAmt, durationPeriod, dataObj, defaultCalScheme, startingMoneyObj);
     this.dataObject['calculatedData'] = calculations;
-
+    
     this.calculationForm.patchValue({
       monthly_rate: this.dataObject['calculatedData']['monthlyRate'],
       first_installment: this.dataObject['calculatedData']['firstInstallmentAmt'],
@@ -186,7 +186,6 @@ export class CalculatorComponent {
       effective_rate: this.dataObject['calculatedData']['effectiveRate'],
       nominal_rate: this.dataObject['calculatedData']['nominalRate'],
     })
-
   }
 
   getCalcActions() {
@@ -248,8 +247,11 @@ export class CalculatorComponent {
     if (this.dataObject.hasOwnProperty('noObjectName')) {
       this.objectname_input.isShow = this.dataObject['noObjectName'];
     }
+
+    console.log('Does dataObject containes lableJson: ', this.dataObject.hasOwnProperty("lableJson"))
+
     if (this.dataObject.hasOwnProperty("lableJson")) {
-      this.lableJson = this.dataObject['lableJson'];
+      this.lableJson = JSON.parse(this.dataObject['lableJson']);
       this.traslationService.lableJson = this.dataObject['lableJson'];
     }
 

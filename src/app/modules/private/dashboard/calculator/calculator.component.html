@@ -46,7 +46,7 @@
             <ng-template #thenTabs>
                 <ul class="nav nav-tabs" id="widget-tab" role="tablist">
                     <li class="nav-item">
-                        <a id="zero" class="nav-link" [ngClass]="{ active: isPageZeroActive == true }"
+                        <a id="zero" class="nav-link" [ngClass]="{ active: isPageZeroActive === true }"
                             (click)="stepZeroActivate()">0</a>
                     </li>
                     <li class="nav-item">
@@ -100,79 +100,75 @@
                 <div class="tab-content">
 
                     <!-- Page Zero -->
-                    <div
-                        *ngIf="dataObject['noObjectName'] === true || dataObject['noPrice'] === true || dataObject['showObjGroupDropdown'] === true || dataObject['showUsageDropdown'] === true || dataObject['showSchemeDropdown'] === true">
-                        <div class="tab-pane fade in active show" id="zero-tab">
+                    <div *ngIf="isPageZeroActive" class="tab-pane fade" id="zero-tab"
+                        [ngClass]="{'in active show': dataObject['noObjectName'] === true || dataObject['noPrice'] === true || dataObject['showObjGroupDropdown'] === true || dataObject['showUsageDropdown'] === true || dataObject['showSchemeDropdown'] === true}">
 
-                            <!-- Data Object UID -->
-                            <input type="hidden" id="dataObjectUid" formControlName="dataObjectUid"
-                                [value]="dataObject['uid']" />
+                        <!-- Data Object UID -->
+                        <input type="hidden" id="dataObjectUid" formControlName="dataObjectUid"
+                            [value]="dataObject['uid']" />
 
-                            <!-- Object Name -->
-                            <div class="textfield-group" *ngIf="dataObject['noObjectName'] === true">
-                                <div class="textfield-group">
-                                    <input type="text" formControlName="objectname_input" id="objectname_input"
-                                        class="textfield-input" additionalAttributes="{autocomplete: 'off'}">
-                                    <label for="objectname_input">{{ getLabel('step1_obj_name') }}</label>
-                                </div>
+                        <!-- Object Name -->
+                        <div class="textfield-group" *ngIf="dataObject['noObjectName'] === true">
+                            <div class="textfield-group">
+                                <input type="text" formControlName="objectname_input" id="objectname_input"
+                                    class="textfield-input" additionalAttributes="{autocomplete: 'off'}">
+                                <label for="objectname_input">{{ getLabel('step1_obj_name') }}</label>
                             </div>
-
-                            <!-- Purchase Amount -->
-                            <div class="textfield-group" *ngIf="dataObject['noPrice'] === true"
-                                [ngClass]="{'is-focused': objectname_input.isFocused === true, 'is-filled': objectname_input.isFilled === true}">
-                                <input type="text" formControlName="purchase_amt_input" id="purchase_amt_input"
-                                    class="textfield-input" additionalAttributes="{autocomplete: 'off'}"
-                                    (focus)="purchase_amt_input.isFocused = isFieldFocused('focus')"
-                                    (blur)="purchase_amt_input.isFocused = isFieldFocused('blur'); purchase_amt_input.isFilled = isFieldFilled('objectname_input')">
-                                <label for="purchase_amt_input">{{ getLabel('step1_purchase_amt') }}</label>
-                            </div>
-
-                            <!-- Object Group -->
-                            <div class="textfield-group select-menu is-filled"
-                                *ngIf="dataObject['showObjGroupDropdown'] === true"
-                                [ngClass]="{'is-focused': objectname_input.isFocused === true, 'is-filled': objectname_input.isFilled === true}">
-                                <label for="select_obj_group">{{ getLabel('step1_obj_group') }}</label>
-                                <i class="icon icon-down_large"></i>
-                                <select formControlName="obj_group" id="select_obj_group"
-                                    class="select-style textfield-input"
-                                    *ngFor="let objectGroup of dataObject['dataObject']['objectGroup']">
-                                    <option value="objectGroup.uid">{{objectGroup.name}}</option>
-                                </select>
-                            </div>
-
-                            <!-- Calculation Scheme -->
-                            <div *ngIf="dataObject['showSchemeDropdown'] === true"
-                                class="textfield-group select-menu is-filled" id="scheme-dropdown">
-                                <label for="select_scheme">{{ getLabel('step1_scheme') }}</label>
-                                <i class="icon icon-down_large"></i>
-                                <select formControlName="cal_scheme" id="select_scheme"
-                                    class="select-style textfield-input"
-                                    *ngFor="let calScheme of dataObject['defaultObjectGroup']['calculationScheme']">
-                                    <option value="calScheme.uid">{{
-                                        getLabel('tx_calc_calculation_scheme.name.I.' + calScheme.name) }}
-                                    </option>
-                                </select>
-                            </div>
-
-                            <!-- Usage -->
-                            <div class="textfield-group select-menu is-filled"
-                                *ngIf="dataObject['showUsageDropdown'] === true">
-                                <label for="select_usage_type">{{ getLabel('step1_usage') }}</label>
-                                <i class="icon icon-down_large"></i>
-                                <select formControlName="usage" id="select_usage_type"
-                                    class="select-style textfield-input">
-                                    <option value="1">{{ getLabel('tx_calc_data.type_of_usage.I.0') }}</option>
-                                    <option value="2">{{ getLabel('tx_calc_data.type_of_usage.I.1') }}</option>
-                                </select>
-                            </div>
-
-                            <!-- Go to step One button -->
-                            <button type="button" class="blue-button show-first-tab" id="zero-tab-btn"
-                                (click)="stepOneActivate()">
-                                <i class="icon icon-right_small"></i>
-                                <span class="button-lefticon">{{ getLabel('step1_submit') }}</span>
-                            </button>
                         </div>
+
+                        <!-- Purchase Amount -->
+                        <div class="textfield-group" *ngIf="dataObject['noPrice'] === true"
+                            [ngClass]="{'is-focused': objectname_input.isFocused === true, 'is-filled': objectname_input.isFilled === true}">
+                            <input type="text" formControlName="purchase_amt_input" id="purchase_amt_input"
+                                class="textfield-input" additionalAttributes="{autocomplete: 'off'}"
+                                (focus)="purchase_amt_input.isFocused = isFieldFocused('focus')"
+                                (blur)="purchase_amt_input.isFocused = isFieldFocused('blur'); purchase_amt_input.isFilled = isFieldFilled('objectname_input')">
+                            <label for="purchase_amt_input">{{ getLabel('step1_purchase_amt') }}</label>
+                        </div>
+
+                        <!-- Object Group -->
+                        <div class="textfield-group select-menu is-filled"
+                            *ngIf="dataObject['showObjGroupDropdown'] === true"
+                            [ngClass]="{'is-focused': objectname_input.isFocused === true, 'is-filled': objectname_input.isFilled === true}">
+                            <label for="select_obj_group">{{ getLabel('step1_obj_group') }}</label>
+                            <i class="icon icon-down_large"></i>
+                            <select formControlName="obj_group" id="select_obj_group"
+                                class="select-style textfield-input"
+                                *ngFor="let objectGroup of dataObject['dataObject']['objectGroup']">
+                                <option value="objectGroup.uid">{{objectGroup.name}}</option>
+                            </select>
+                        </div>
+
+                        <!-- Calculation Scheme -->
+                        <div *ngIf="dataObject['showSchemeDropdown'] === true"
+                            class="textfield-group select-menu is-filled" id="scheme-dropdown">
+                            <label for="select_scheme">{{ getLabel('step1_scheme') }}</label>
+                            <i class="icon icon-down_large"></i>
+                            <select formControlName="cal_scheme" id="select_scheme" class="select-style textfield-input"
+                                *ngFor="let calScheme of dataObject['defaultObjectGroup']['calculationScheme']">
+                                <option value="calScheme.uid">{{
+                                    getLabel('tx_calc_calculation_scheme.name.I.' + calScheme.name) }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Usage -->
+                        <div class="textfield-group select-menu is-filled"
+                            *ngIf="dataObject['showUsageDropdown'] === true">
+                            <label for="select_usage_type">{{ getLabel('step1_usage') }}</label>
+                            <i class="icon icon-down_large"></i>
+                            <select formControlName="usage" id="select_usage_type" class="select-style textfield-input">
+                                <option value="1">{{ getLabel('tx_calc_data.type_of_usage.I.0') }}</option>
+                                <option value="2">{{ getLabel('tx_calc_data.type_of_usage.I.1') }}</option>
+                            </select>
+                        </div>
+
+                        <!-- Go to step One button -->
+                        <button type="button" class="blue-button show-first-tab" id="zero-tab-btn"
+                            (click)="stepOneActivate()">
+                            <i class="icon icon-right_small"></i>
+                            <span class="button-lefticon">{{ getLabel('step1_submit') }}</span>
+                        </button>
                     </div>
 
                     <!-- Page One -->

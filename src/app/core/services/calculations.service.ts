@@ -26,7 +26,7 @@ export class CalculationsService {
     let objStyle: string = params?.style;
     let activeSale: string = params?.activesale;
     let userLoggedIn: string = params?.loggedin;
-    let dataObjects = this.storageService.get('AccessToken');
+    let dataObjects = this.storageService.get(environment.clientConfigName);
     let lableJson = dataObjects['labelJson'] ? dataObjects['labelJson'] : {};
     let dataObj: Object | null;
     let formToken: string;
@@ -133,12 +133,12 @@ export class CalculationsService {
 
       showObjGroupDropdown = false;
       showSchemeDropdown = false;
-
-      defaultObjectGroup = dataObj['objectGroup']['000000004e353163000000007741139e'];
-
+      
+      defaultObjectGroup = Object.values(dataObj['objectGroup'])[0];
+      
       if (defaultObjectGroup) {
-
-        defaultCalScheme = dataObj['objectGroup']['000000004e353163000000007741139e']['calculationScheme']['000000004e3531e9000000007741139e'];
+        
+        defaultCalScheme = Object.values(defaultObjectGroup['calculationScheme'])[0];
 
         if (dataObj['objectGroup'].length > 1) {
           showObjGroupDropdown = true;
@@ -381,7 +381,7 @@ export class CalculationsService {
      * 
      * @return array
      */
-  calculation(price, firstInstallmentAmt, lastInstallmentAmt, durationPeriod, dataObj, calScheme, startingMoneyObj = null) {
+  calculation(price, firstInstallmentAmt, lastInstallmentAmt, durationPeriod, dataObj, calScheme, startingMoneyObj) {
     let startingMoneyUid: number = null;
     if (startingMoneyObj && startingMoneyObj != '') {
       startingMoneyUid = startingMoneyObj['uid'] ? startingMoneyObj['uid'] : null;

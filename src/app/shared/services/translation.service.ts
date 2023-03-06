@@ -21,7 +21,6 @@ export class TranslationService {
    * @returns translated word into selected language
    */
   getLabel(key: string): string {
-
     let file: Object;
     let body: Object;
     let transUnit: Array<Object>;
