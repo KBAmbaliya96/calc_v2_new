@@ -9,7 +9,7 @@ export class TranslationService {
 
   constructor(private storageService: StorageService) {
     this.clientConfig = this.storageService.get(environment.clientConfigName);
-    this.lableJson = this.clientConfig['labelJson'];
+    this.lableJson = JSON.parse(this.clientConfig['labelJson']);
   }
   clientConfig = {}
   lableJson: any[] = []; // data will be assigned from calculator component

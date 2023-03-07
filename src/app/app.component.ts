@@ -20,7 +20,7 @@ export class AppComponent {
   // UI Rendering configurations
   isOnline: boolean = false; // Application's online/offline status
   isShowParamError: boolean = false; // URL's GET parameters status
-  isInstalled: boolean = false; // Application's PWA installation status
+  isAppInstalled: boolean = false; // Application's PWA installation status
   isIframeOpened: boolean = false; // iFrame hide/shows
   btnlabel = 'Finanzierungsrechner'; /* label for calc button  */
 
@@ -59,25 +59,21 @@ export class AppComponent {
 
     // Check PWA is installed
     this.pwaService.installed$.subscribe((evnt) => {
-      this.isInstalled = evnt;
+      this.isAppInstalled = evnt;
       // FIXME: add /?c_name=client_name when PWA starts
-      if (this.isInstalled === true) {
+      if (this.isAppInstalled === true) {
         // Check if URL params and client configuration is stored in local storage
-        let queryParams = this.storageService.get(environment.clientParamsName);
-        let clientConfig = this.storageService.get(environment.clientConfigName);
-        if (!queryParams || !clientConfig) {
+        this.queryParams = this.storageService.get(environment.clientParamsName);
+        this.clientConfig = this.storageService.get(environment.clientConfigName);
+        if (!this.queryParams || !this.clientConfig) {
           this.isShowParamError = true;
         } else {
+          this.router.navigate([''], { queryParams: this.queryParams })
+          // console.log('pwa service installed: ', this.queryParams);
           // FIXME: Check if feUsers are configured
           let feUsers: any[] = [];
-          if (clientConfig['objectfeUser']) {
-            feUsers = clientConfig['objectfeUser'];
-          }
-
-          if (feUsers.length > 0) {
-            this.router.navigate(['public'])
-          } else {
-            this.router.navigate(['private'])
+          if (this.clientConfig['objectfeUser']) {
+            feUsers = this.clientConfig['objectfeUser'];
           }
         }
       }
@@ -85,18 +81,27 @@ export class AppComponent {
 
     // Check parameters are passed to get client configuration
     this.activatedRouter.queryParams.subscribe((param) => {
+      console.log('activatedRoute param: ', param);
       if (Object.keys(param).length == 0) {
         this.isShowParamError = true;
       } else {
         this.isShowParamError = false;
         // Store URL params for PWA
         this.storageService.set(environment.clientParamsName, param);
+
         // Get client configuration
         this.getLatestClientConfiguration(param);
       }
     })
 
   }
+
+  gotoURL() {
+    console.log('queryParams: ', this.queryParams);
+  }
+
+  queryParams: Object;
+  clientConfig: Object;
 
   getLatestClientConfiguration(params: Object): void {
     this.clientConfigService.getClientConfig(params).subscribe((res) => {
@@ -113,12 +118,20 @@ export class AppComponent {
 
       if (feUsers.length > 0) {
         if (this.storageService.get(environment.feUserLoggedInKey)) {
-          this.router.navigate(['private/calculator'], { queryParamsHandling: 'preserve' });
+          if (this.isAppInstalled) {
+            this.router.navigate(['private/dashboard'], { queryParams: this.queryParams, queryParamsHandling: 'preserve' });
+          } else {
+            this.router.navigate(['private/calculator'], { queryParamsHandling: 'preserve' });
+          }
         } else {
           this.router.navigate(['public'], { queryParamsHandling: 'preserve' })
         }
       } else {
-        this.router.navigate(['private/calculator'], { queryParamsHandling: 'preserve' })
+        if (this.isAppInstalled) {
+          this.router.navigate(['private/dashboard'], { queryParams: this.queryParams, queryParamsHandling: 'preserve' });
+        } else {
+          this.router.navigate(['private/calculator'], { queryParamsHandling: 'preserve' });
+        }
       }
     })
   }

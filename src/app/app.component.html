@@ -1,42 +1,44 @@
 <div *ngIf="!isOnline" class="bg-danger text-center text-white p-2 mb-4">Internet is not available.</div>
-<div *ngIf="isShowParamError" class="bg-dark text-center text-white p-2 mb-4">Please add atleast one parameter (i.e. /?c_name=text)</div> 
+<div *ngIf="isShowParamError" (click)="gotoURL()" class="bg-dark text-center text-white p-2 mb-4">Please add atleast one
+    parameter (i.e.
+    /?c_name=text)</div>
 
-<div *ngIf="!isInstalled && !isShowParamError" id="wrapper">
-  <div class="container">
-      <div class="frame frame-default frame-type-html frame-layout-0">
-          <div id="calc-section">
-              <a href="javascript:void(0)" id="calcbtn" (click)="openIframe()">
-                  <img src="https://calc2-akf.inity.net/typo3conf/ext/calc/Resources/Public/Icons/financing-icon.svg">
-                  {{ btnlabel }}
-              </a>
-          </div>
-      </div>
-      <div id="c1266" class="frame frame-default frame-type-html frame-layout-0">
-          <div id="footnotediv">
-          </div>
-      </div>
-  </div>
+<div *ngIf="!isAppInstalled && !isShowParamError" id="wrapper">
+    <div class="container">
+        <div class="frame frame-default frame-type-html frame-layout-0">
+            <div id="calc-section">
+                <a href="javascript:void(0)" id="calcbtn" (click)="openIframe()">
+                    <img src="https://calc2-akf.inity.net/typo3conf/ext/calc/Resources/Public/Icons/financing-icon.svg">
+                    {{ btnlabel }}
+                </a>
+            </div>
+        </div>
+        <div id="c1266" class="frame frame-default frame-type-html frame-layout-0">
+            <div id="footnotediv">
+            </div>
+        </div>
+    </div>
 </div>
 <div id="calc-overlay" *ngIf="isIframeOpened === true" [ngStyle]="{'opacity': 1, 'visibility': 'visible' }">
-  <div id="myifrm" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
-      style="right: 0px;" class="bg-white">
-      <div class="page-163 level-0 fileCalc__Calc_Index">
-          <a href="javascript:void(0)" id="close-ifrm" (click)="openIframe()">
-              <i class="icon icon-cancel_large"></i>
-          </a>
-          <div class="wrapper">
-              <div class="sidebar">
-                  <div id="c1271" class="frame frame-default frame-type-list frame-layout-0">
-                      <div class="tx-calc">
-                          <router-outlet></router-outlet>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
+    <div id="myifrm" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+        style="right: 0px; overflow-y: auto;" class="bg-white">
+        <div class="page-163 level-0 fileCalc__Calc_Index">
+            <a href="javascript:void(0)" id="close-ifrm" (click)="openIframe()">
+                <i class="icon icon-cancel_large"></i>
+            </a>
+            <div class="wrapper">
+                <div class="sidebar">
+                    <div id="c1271" class="frame frame-default frame-type-list frame-layout-0">
+                        <div class="tx-calc">
+                            <router-outlet></router-outlet>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div *ngIf="isInstalled && !isShowParamError">
-  <router-outlet></router-outlet>
+<div *ngIf="isAppInstalled && !isShowParamError">
+    <router-outlet></router-outlet>
 </div>

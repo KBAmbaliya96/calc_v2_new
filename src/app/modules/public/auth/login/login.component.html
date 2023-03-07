@@ -4,7 +4,7 @@
   <div class="tx-calc">
     <h2>Finanzierungsrechner Login</h2>
     <form [formGroup]="loginForm" class="contact-form login-form">
-      <div class="textfield-group" [ngClass]="{
+      <div *ngIf="isAppInstalled" class="textfield-group" [ngClass]="{
                 'is-focused': isClientNameFocused === true,
                 'is-filled': isClientNameFilled === true
               }">

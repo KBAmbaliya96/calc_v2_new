@@ -13,8 +13,11 @@ export class AuthService {
     private storageSerivce: StorageService,
     private pwaService: PwaService,
     private router: Router
-  ) { }
+  ) {
+    this.pwaService.installed$.subscribe(event => this.isAppInstalled = event);
+  }
 
+  isAppInstalled: boolean = false;
   argon2 = require('node_modules/argon2-browser/dist/argon2-bundled.min.js');
 
   logIn(payload: any) {
@@ -29,20 +32,38 @@ export class AuthService {
     }
 
     feUsers.forEach((feUser) => {
-      if (clientConfig['companyName'] == clientName && feUser['username'] == userName) {
-        if (feUser['password'] != '') {
-          let feUserPassword = feUser['password'];
-          // FIXME: argon2i hash verify code cose here
-          this.storageSerivce.set(environment.feUserLoggedInKey, true);
-          this.pwaService.installed$.subscribe((event) => {
-            if (event) {
-              this.router.navigate(['private/dashboard'], { queryParamsHandling: 'preserve' })
-            } else {
-              this.router.navigate(['private/calculator'], { queryParamsHandling: 'preserve' })
-            }
-          })
+      if (!this.isAppInstalled) {
+        if (feUser['username'] == userName) {
+          if (feUser['password'] != '') {
+            let feUserPassword = feUser['password'];
+            // FIXME: argon2i hash verify code cose here
+            this.storageSerivce.set(environment.feUserLoggedInKey, true);
+            this.pwaService.installed$.subscribe((event) => {
+              if (event) {
+                this.router.navigate(['private/dashboard'], { queryParamsHandling: 'preserve' })
+              } else {
+                this.router.navigate(['private/calculator'], { queryParamsHandling: 'preserve' })
+              }
+            })
+          }
+        }
+      } else {
+        if (clientConfig['companyName'] == clientName && feUser['username'] == userName) {
+          if (feUser['password'] != '') {
+            let feUserPassword = feUser['password'];
+            // FIXME: argon2i hash verify code cose here
+            this.storageSerivce.set(environment.feUserLoggedInKey, true);
+            this.pwaService.installed$.subscribe((event) => {
+              if (event) {
+                this.router.navigate(['private/dashboard'], { queryParamsHandling: 'preserve' })
+              } else {
+                this.router.navigate(['private/calculator'], { queryParamsHandling: 'preserve' })
+              }
+            })
+          }
         }
       }
+
     })
   }
 }

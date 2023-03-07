@@ -1,9 +1,12 @@
-import { Component, OnInit,
+import {
+  Component, OnInit,
   AfterViewInit,
   ViewChild,
-  ElementRef } from '@angular/core';
+  ElementRef
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { PwaService } from 'src/app/core/services/pwa.service';
 
 @Component({
   selector: 'app-login',
@@ -13,14 +16,18 @@ import { AuthService } from 'src/app/core/services/auth.service';
 export class LoginComponent implements OnInit, AfterViewInit {
   constructor(
     private formBuilder: FormBuilder,
-    private authService: AuthService
-  ) {}
+    private authService: AuthService,
+    private pwaService: PwaService
+  ) {
+    this.pwaService.installed$.subscribe(event => this.isAppInstalled = event);
+  }
   @ViewChild('clientName') client_name!: ElementRef;
   loginForm: FormGroup = this.formBuilder.group({
     clientName: ['', Validators.required],
     userName: ['', Validators.required],
     password: ['', Validators.required],
   });
+  isAppInstalled: boolean = false;
   isClientNameFocused: boolean = false;
   isClientNameFilled: boolean = false;
   isUsernameFocused: boolean = false;
@@ -33,7 +40,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.client_name.nativeElement.focus();
+    if (this.isAppInstalled) {
+      this.client_name.nativeElement.focus();
+    }
   }
 
   isFieldFocused(eventType: string): boolean {
@@ -54,7 +63,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   formSubmit(): boolean {
-    if (!this.loginForm.value.clientName) {
+    if (this.isAppInstalled && !this.loginForm.value.clientName) {
       // Login form validation code write here
       console.error("Client name not valid!");
       return false;

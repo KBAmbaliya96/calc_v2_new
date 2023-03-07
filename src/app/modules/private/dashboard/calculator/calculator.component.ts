@@ -176,7 +176,7 @@ export class CalculatorComponent {
     let startingMoneyObj: Object = this.calculationsService.getStartingMoneyObj(price, defaultCalScheme);
     let calculations = this.calculationsService.calculation(price, firstInstallmentAmt, lastInstallmentAmt, durationPeriod, dataObj, defaultCalScheme, startingMoneyObj);
     this.dataObject['calculatedData'] = calculations;
-    
+
     this.calculationForm.patchValue({
       monthly_rate: this.dataObject['calculatedData']['monthlyRate'],
       first_installment: this.dataObject['calculatedData']['firstInstallmentAmt'],
@@ -247,12 +247,8 @@ export class CalculatorComponent {
     if (this.dataObject.hasOwnProperty('noObjectName')) {
       this.objectname_input.isShow = this.dataObject['noObjectName'];
     }
-
-    console.log('Does dataObject containes lableJson: ', this.dataObject.hasOwnProperty("lableJson"))
-
     if (this.dataObject.hasOwnProperty("lableJson")) {
       this.lableJson = JSON.parse(this.dataObject['lableJson']);
-      this.traslationService.lableJson = this.dataObject['lableJson'];
     }
 
     this.calculationForm.patchValue({
@@ -326,6 +322,8 @@ export class CalculatorComponent {
   }
 
   getLabel(key: string): string {
+
+    // return this.traslationService.getLabel(key);
     let file: Object;
     let body: Object;
     let transUnit: Array<Object>;
