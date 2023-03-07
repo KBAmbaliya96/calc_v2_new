@@ -68,7 +68,8 @@ export class AppComponent {
         if (!this.queryParams || !this.clientConfig) {
           this.isShowParamError = true;
         } else {
-          this.router.navigate([''], { queryParams: this.queryParams })
+          // this.router.navigate([''], { queryParams: this.queryParams })
+          this.router.navigate([], { relativeTo: this.activatedRouter, queryParams: this.queryParams, queryParamsHandling: 'merge', skipLocationChange: true })
           // console.log('pwa service installed: ', this.queryParams);
           // FIXME: Check if feUsers are configured
           let feUsers: any[] = [];
