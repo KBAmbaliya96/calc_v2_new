@@ -97,10 +97,6 @@ export class AppComponent {
 
   }
 
-  gotoURL() {
-    console.log('queryParams: ', this.queryParams);
-  }
-
   queryParams: Object;
   clientConfig: Object;
 
